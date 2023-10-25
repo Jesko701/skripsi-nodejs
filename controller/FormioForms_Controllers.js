@@ -29,7 +29,7 @@ const show = async (req, res) => {
       ],
     });
     if (!data) {
-      res.status(404).json({
+      return res.status(404).json({
         message: "data tidak ditemukan",
       });
     }
@@ -45,9 +45,98 @@ const show = async (req, res) => {
   }
 };
 
-const create = async (req, res) => {};
+const create = async (req, res) => {
+  const {
+    status,
+    name,
+    token,
+    data,
+    created_by,
+    updated_by,
+    deleted,
+    id_tema,
+    is_only_kordes,
+    is_only_dosen,
+    is_harus_login,
+  } = req.body;
+  try {
+    const insert = await formioForms.create({
+      status,
+      name,
+      token,
+      data,
+      created_by,
+      updated_by,
+      deleted,
+      id_tema,
+      is_only_kordes,
+      is_only_dosen,
+      is_harus_login,
+    });
+    if (!insert) {
+      return res.status(404).json({
+        message: "data tidak berhasil dibuat",
+      });
+    }
+    res.status(200).json({
+      message: "data berhasil dibuat",
+      data: insert,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Terjadi kesalahan saat membuat data",
+      error: error.message,
+    });
+  }
+};
 
-const update = async (req, res) => {};
+const update = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const {
+      status,
+      name,
+      token,
+      data,
+      created_by,
+      updated_by,
+      deleted,
+      id_tema,
+      is_only_kordes,
+      is_only_dosen,
+      is_harus_login,
+    } = req.body;
+    const existingForms = await formioForms.findByPk(id)
+    if (!existingForms){
+      return res.status(500).json({
+        message: "data tidak ditemukan"
+      })
+    }
+    existingForms.status = status
+    existingForms.name = name
+    existingForms.token = token
+    existingForms.data = data
+    existingForms.created_by = created_by
+    existingForms.updated_by = updated_by
+    existingForms.deleted = deleted
+    existingForms.id_tema = id_tema
+    existingForms.is_only_kordes = is_only_kordes
+    existingForms.is_only_dosen = is_only_dosen
+    existingForms.is_harus_login = is_harus_login
+
+    await existingForms.save()
+
+    res.status(200).json({
+      message: "data berhasil diperbarui",
+      data: existingForms
+    })
+  } catch (error) {
+    res.status(500).json({
+      message: "Terjadi kesalahan saat memperbarui data",
+      error: error.message,
+    });
+  }
+};
 
 const hapus = async (req, res) => {
   const { id } = req.params;
@@ -58,7 +147,7 @@ const hapus = async (req, res) => {
       },
     });
     if (!data) {
-      res.status(404).json({
+      return res.status(404).json({
         message: "data tidak ditemukan",
       });
     }

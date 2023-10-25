@@ -29,7 +29,7 @@ const show = async (req, res) => {
       ],
     });
     if (!data) {
-      res.status(404).json({
+      return res.status(404).json({
         message: "data tidak ditemukan",
       });
     }
@@ -45,9 +45,64 @@ const show = async (req, res) => {
   }
 };
 
-const create = async (req, res) => {};
+const create = async (req, res) => {
+  const { slug, title, body, parent_id, status } = req.body;
+  try {
+    const data = await articleCategory.create({
+      slug,
+      title,
+      body,
+      parent_id,
+      status,
+    });
+    if (!data) {
+      return res.status(404).json({
+        message: "data tidak berhasil dibuat",
+      });
+    }
+    res.status(200).json({
+      message: "data berhasil dibuat",
+      data: data,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "terjadi kesalahan saat menyimpan data",
+      error: error.message,
+    });
+  }
+};
 
-const update = async (req, res) => {};
+const update = async (req, res) => {
+  const id = req.params.id;
+  try {
+    const { slug, title, body, parent_id, status } = req.body;
+    const existingData = await articleCategory.findByPk(id);
+
+    if (!existingData) {
+      return res.status(404).json({
+        message: "data tidak ditemukan",
+      });
+    }
+
+    existingData.slug = slug;
+    existingData.title = title;
+    existingData.body = body;
+    existingData.parent_id = parent_id;
+    existingData.status = status;
+
+    await existingData.save();
+
+    res.status(200).json({
+      message: "data berhasil diperbarui",
+      data: existingData,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "terjadi kesalahan saat merubah data",
+      error: error.message,
+    });
+  }
+};
 
 const hapus = async (req, res) => {
   const { id } = req.params;
@@ -58,7 +113,7 @@ const hapus = async (req, res) => {
       },
     });
     if (!data) {
-      res.status(404).json({
+      return res.status(404).json({
         message: "data tidak ditemukan",
       });
     }
@@ -74,9 +129,9 @@ const hapus = async (req, res) => {
 };
 
 module.exports = {
-    all,
-    show,
-    create,
-    update,
-    hapus
-}
+  all,
+  show,
+  create,
+  update,
+  hapus,
+};

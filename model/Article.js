@@ -44,6 +44,14 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.DATE,
       allowNull: true,
     },
+    created_at: {
+      type: DataTypes.INTEGER,
+      defaultValue: Math.floor(Date.now()/1000)
+    },
+    updated_at : {
+      type: DataTypes.INTEGER,
+      defaultValue: Math.floor(Date.now()/1000)
+    }
   }, {
     tableName: 'article'
   });

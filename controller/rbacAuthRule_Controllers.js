@@ -19,9 +19,9 @@ const all = async (req, res) => {
 };
 
 const show = async (req, res) => {
-  const { id } = req.params;
+  const { name } = req.params;
   try {
-    const data = await authRule.findByPk(id, {
+    const data = await authRule.findByPk(name, {
       include: [
         {
           model: authItem,
@@ -29,6 +29,11 @@ const show = async (req, res) => {
         },
       ],
     });
+    if (!data){
+      return res.status(404).json({
+        message: "data tidak ditemukan"
+      })
+    }
     res.status(200).json({
       message: "data berhasil ditemukan",
       data: data,
@@ -46,15 +51,15 @@ const create = async (req, res) => {};
 const update = async (req, res) => {};
 
 const hapus = async (req, res) => {
-  const { id } = req.params;
+  const { name } = req.params;
   try {
     const data = await authRule.destroy({
       where: {
-        id: id,
+        name: name,
       },
     });
     if (!data) {
-      res.status(404).json({
+      return res.status(404).json({
         message: "data tidak ditemukan",
       });
     }
@@ -63,7 +68,7 @@ const hapus = async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({
-      message: "Terjadi kesalahan saat mengambil data",
+      message: "Terjadi kesalahan saat menghapus data",
       error: error.message,
     });
   }
