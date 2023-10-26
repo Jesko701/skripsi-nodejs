@@ -52,9 +52,59 @@ const show = async (req, res) => {
   }
 };
 
-const create = async (req, res) => {};
+const create = async (req, res) => {
+  const { name, type, description, rule_name, data } = req.body;
+  try {
+    const insert = await authItem.create({
+      name,
+      type,
+      description,
+      rule_name,
+      data,
+    });
+    if (!insert) {
+      res.status(404).json({
+        message: "data tidak berhasil dibuat",
+      });
+    }
+    res.status(201).json({
+      message: "data berhasil dibuat",
+      data: insert,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Terjadi kesalahan saat membuat data",
+      error: error.message,
+    });
+  }
+};
 
-const update = async (req, res) => {};
+const update = async (req, res) => {
+  const name = req.params.name;
+  try {
+    const { type, description, rule_name, data } = req.body;
+    const existingData = await authItem.findByPk(name);
+    if (!existingData) {
+      res.status(404).json({
+        message: "data tidak ditemukan",
+      });
+    }
+    existingData.type = type;
+    existingData.description = description;
+    existingData.rule_name = rule_name;
+    existingData.data = data;
+    existingData.save();
+    res.status(200).json({
+      message: "data berhasil diupdate",
+      data: existingData,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Terjadi kesalahan saat memperbarui data",
+      error: error.message,
+    });
+  }
+};
 
 const hapus = async (req, res) => {
   const { name } = req.params;

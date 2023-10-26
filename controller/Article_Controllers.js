@@ -79,10 +79,10 @@ const create = async (req, res) => {
       updated_by,
       published_at,
     });
-    if (!newArticle){
+    if (!newArticle) {
       return res.status(404).json({
-        message: "data tidak berhasil dibuat"
-      })
+        message: "data tidak berhasil dibuat",
+      });
     }
     res.status(201).json({
       message: "data berhasil dibuat",
@@ -97,7 +97,7 @@ const create = async (req, res) => {
 };
 
 const update = async (req, res) => {
-  const id = req.params.id
+  const id = req.params.id;
   try {
     const {
       slug,
@@ -110,14 +110,14 @@ const update = async (req, res) => {
       status,
       created_by,
       updated_by,
-      published_at
+      published_at,
     } = req.body;
 
-    const existingData = await article.findByPk(id)
-    if (!existingData){
+    const existingData = await article.findByPk(id);
+    if (!existingData) {
       return res.status(404).json({
-        message: "data tidak ditemukan"
-      })
+        message: "data tidak ditemukan",
+      });
     }
 
     existingData.slug = slug;
@@ -132,16 +132,16 @@ const update = async (req, res) => {
     existingData.updated_by = updated_by;
     existingData.published_at = published_at;
 
-    await existingData.save()
+    await existingData.save();
 
     res.status(200).json({
       message: "data berhasil diperbarui",
-      data: existingData
-    })
+      data: existingData,
+    });
   } catch (error) {
     res.status(500).json({
       message: "Terjadi kesalahan saat mengupdate data",
-      error: error.message
+      error: error.message,
     });
   }
 };

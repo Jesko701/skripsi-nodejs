@@ -47,20 +47,24 @@ const show = async (req, res) => {
 };
 
 const create = async (req, res) => {
-  const {form_id,data,created_by,updated_by,deleted} = req.body
+  const { form_id, data, created_by, updated_by, deleted } = req.body;
   try {
     const insert = await formsSubmission.create({
-      form_id,data,created_by,updated_by,deleted
-    })
-    if(!insert){
+      form_id,
+      data,
+      created_by,
+      updated_by,
+      deleted,
+    });
+    if (!insert) {
       return res.status(404).json({
-        message: 'data tidak berhasil dibuat'
-      })
+        message: "data tidak berhasil dibuat",
+      });
     }
     res.status(200).json({
-      message:'data berhasil dibuat',
-      data: insert
-    })
+      message: "data berhasil dibuat",
+      data: insert,
+    });
   } catch (error) {
     res.status(500).json({
       message: "Terjadi kesalahan saat membuat data",
@@ -72,23 +76,24 @@ const create = async (req, res) => {
 const update = async (req, res) => {
   const id = req.params.id;
   try {
-    const {form_id,data,created_by,updated_by,deleted} = req.body
-    const existingData = await formsSubmission.findByPk(id)
-    if(!existingData){
+    const { form_id, data, created_by, updated_by, deleted } = req.body;
+    const existingData = await formsSubmission.findByPk(id);
+    if (!existingData) {
       return res.status(404).json({
-        message: 'data tidak ditemukan'
-      })
+        message: "data tidak ditemukan",
+      });
     }
-    existingData.form_id = form_id
-    existingData.data = data
-    existingData.created_by = created_by
-    existingData.updated_by = updated_by
-    existingData.deleted = deleted
+    existingData.form_id = form_id;
+    existingData.data = data;
+    existingData.created_by = created_by;
+    existingData.updated_by = updated_by;
+    existingData.deleted = deleted;
 
+    await existingData.save();
     res.status(200).json({
       message: "data berhasil diperbarui",
-      data: existingData
-    })
+      data: existingData,
+    });
   } catch (error) {
     res.status(500).json({
       message: "Terjadi kesalahan saat memperbarui data",
@@ -126,5 +131,5 @@ module.exports = {
   show,
   create,
   update,
-  hapus
-}
+  hapus,
+};

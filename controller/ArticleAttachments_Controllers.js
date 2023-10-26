@@ -100,8 +100,8 @@ const update = async (req, res) => {
   } catch (error) {
     res.status(500).json({
       message: "Terjadi kesalahan saat memperbarui data",
-      error: error.message
-    })
+      error: error.message,
+    });
   }
 };
 

@@ -1,5 +1,5 @@
 const db = require("../model/db");
-
+const { Op } = require("sequelize");
 const authItemChild = db.Rbac_auth_item_child;
 const authItem = db.Rbac_auth_item;
 
@@ -46,9 +46,63 @@ const show = async (req, res) => {
   }
 };
 
-const create = async (req, res) => {};
+const create = async (req, res) => {
+  const { parent, child } = req.body;
+  try {
+    const insert = await authItemChild.create({
+      parent,
+      child,
+    });
+    if (!insert) {
+      res.status(404).json({
+        message: "data gagal dibuat",
+      });
+    }
+    res.status(201).json({
+      message: "data berhasil ditambahkan",
+      data: insert,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Terjadi kesalahan saat membuat data",
+      error: error.message,
+    });
+  }
+};
 
-const update = async (req, res) => {};
+const update = async (req, res) => {
+  const { parent } = req.params;
+  try {
+    const { child } = req.body;
+    const existingData = await authItemChild.update(child, {
+      where: {
+        [Op.or]: [
+          {
+            parent: parent,
+          },
+          {
+            child: child,
+          },
+        ],
+      },
+      returning: true
+    });
+    if (existingData[0] === 0) {
+      res.status(404).json({
+        message: "data tidak ditemukan",
+      });
+    }
+    res.status(200).json({
+      message: "data berhasil diperbarui",
+      data: existingData[1][0]
+    })
+  } catch (error) {
+    res.status(500).json({
+      message: "Terjadi kesalahan saat memperbarui data",
+      error: error.message,
+    });
+  }
+};
 
 const hapus = async (req, res) => {
   const { parentOrChild } = req.params;

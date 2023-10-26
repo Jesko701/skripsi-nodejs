@@ -106,30 +106,30 @@ const update = async (req, res) => {
       is_only_dosen,
       is_harus_login,
     } = req.body;
-    const existingForms = await formioForms.findByPk(id)
-    if (!existingForms){
+    const existingForms = await formioForms.findByPk(id);
+    if (!existingForms) {
       return res.status(500).json({
-        message: "data tidak ditemukan"
-      })
+        message: "data tidak ditemukan",
+      });
     }
-    existingForms.status = status
-    existingForms.name = name
-    existingForms.token = token
-    existingForms.data = data
-    existingForms.created_by = created_by
-    existingForms.updated_by = updated_by
-    existingForms.deleted = deleted
-    existingForms.id_tema = id_tema
-    existingForms.is_only_kordes = is_only_kordes
-    existingForms.is_only_dosen = is_only_dosen
-    existingForms.is_harus_login = is_harus_login
+    existingForms.status = status;
+    existingForms.name = name;
+    existingForms.token = token;
+    existingForms.data = data;
+    existingForms.created_by = created_by;
+    existingForms.updated_by = updated_by;
+    existingForms.deleted = deleted;
+    existingForms.id_tema = id_tema;
+    existingForms.is_only_kordes = is_only_kordes;
+    existingForms.is_only_dosen = is_only_dosen;
+    existingForms.is_harus_login = is_harus_login;
 
-    await existingForms.save()
+    await existingForms.save();
 
     res.status(200).json({
       message: "data berhasil diperbarui",
-      data: existingForms
-    })
+      data: existingForms,
+    });
   } catch (error) {
     res.status(500).json({
       message: "Terjadi kesalahan saat memperbarui data",

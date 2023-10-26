@@ -44,9 +44,50 @@ const show = async (req, res) => {
   }
 };
 
-const create = async (req, res) => {};
+const create = async (req, res) => {
+  try {
+    const { item_name, user_id } = req.body;
+    const insert = await authItemAssignment.create({ item_name, user_id });
+    if (!insert) {
+      res.status(404).json({
+        message: "data gagal dibuat",
+      });
+    }
+    res.status(201).json({
+      message: "data berhasil dibuat",
+      data: insert,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Terjadi kesalahan saat membuat data",
+      error: error.message,
+    });
+  }
+};
 
-const update = async (req, res) => {};
+const update = async (req, res) => {
+    const item_name = req.params.item_name
+    try {
+        const {user_id} = req.body
+        const existingAuthAssignment = await authItemAssignment.findByPk(item_name);
+        if(!existingAuthAssignment){
+            res.status(404).json({
+                message: "data tidak ditemukan"
+            })
+        }
+        existingAuthAssignment.user_id = user_id
+        existingAuthAssignment.save();
+        res.status(200).json({
+            message: "data berhasil diperbarui",
+            data: existingAuthAssignment
+        })
+    } catch (error) {
+        res.status(500).json({
+          message: "Terjadi kesalahan saat mengupdate data",
+          error: error.message,
+        });
+    }
+};
 
 const hapus = async (req, res) => {
   const { item_name } = req.params;
