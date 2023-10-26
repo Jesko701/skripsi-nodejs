@@ -19,9 +19,9 @@ const all = async (req, res) => {
 };
 
 const show = async (req, res) => {
-  const { parentOrChild } = req.params;
+  const { parent } = req.params;
   try {
-    const data = await authItemChild.findByPk(parentOrChild, {
+    const data = await authItemChild.findByPk(parent, {
       include: [
         {
           model: authItem,
@@ -105,11 +105,11 @@ const update = async (req, res) => {
 };
 
 const hapus = async (req, res) => {
-  const { parentOrChild } = req.params;
+  const { parent } = req.params;
   try {
     const data = await authItemChild.destroy({
       where: {
-        [Op.or]: [{ parent: parentOrChild }, { child: parentOrChild }],
+        [Op.or]: [{ parent: parent }, { child: parent }],
       },
     });
     if (!data) {

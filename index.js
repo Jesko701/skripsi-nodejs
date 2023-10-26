@@ -21,11 +21,38 @@ db.sequelize
   });
 
 
-// const articleRoute = require("./routes/articleRoute");
-// app.use("/articleRoute", userRoutes);
+const articleRoute = require("./routes/articleRoute");
+app.use("/article", articleRoute);
 
-// const articleCategory = require("./routes/articleCategoryRoute")
-// app.use("/articleCategory", tutorialRoutes)
+const articleAttachment = require("./routes/articleAttachmentRoute")
+app.use("/articleAtt", articleAttachment)
+
+const articleCategory = require("./routes/articleCategoryRoute")
+app.use("/articleCat", articleCategory)
+
+const formioForms = require("./routes/formioFormsRoute")
+app.use("/forms", formioForms)
+
+const formioSubmission = require("./routes/formioSubmissionRoute")
+app.use("/formsSubmission", formioSubmission)
+
+const rbacAssignment = require("./routes/authAssignmentRoute")
+app.use("/rbacAssign", rbacAssignment)
+
+const rbacRule = require("./routes/authRuleRoute")
+app.use("/rbacRule", rbacRule)
+
+const rbacItem = require("./routes/authItemRoute")
+app.use("/rbacItem", rbacItem)
+
+const rbacChild = require("./routes/authChildRoute")
+app.use("/rbacChild", rbacChild)
+
+app.get('/', (req, res) => {
+  res.status(200).json({
+    message: "Berhasil mengambil API"
+  });
+});
 
 app.listen(3000, () => {
   console.log(`Server running on port ${3000}`);
