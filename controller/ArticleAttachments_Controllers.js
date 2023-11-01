@@ -1,6 +1,6 @@
 const db = require("../model/db");
 const articleAttachment = db.ArticleAttachment;
-const article = db.article;
+const article = db.Article;
 
 const all = async (req, res) => {
   try {

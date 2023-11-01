@@ -26,11 +26,11 @@ const show = async (req, res) => {
       include: [
         {
           model: authItemChild,
-          as: "auth_item_child",
+          as: "rbac_auth_item_children",
         },
         {
           model: authAssignment,
-          as: "auth_assignment",
+          as: "rbac_auth_assignments",
         },
       ],
     });

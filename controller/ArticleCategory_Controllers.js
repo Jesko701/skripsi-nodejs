@@ -62,7 +62,7 @@ const create = async (req, res) => {
     }
     res.status(200).json({
       message: "data berhasil dibuat",
-      data: data,
+      data: data
     });
   } catch (error) {
     res.status(500).json({
@@ -73,7 +73,7 @@ const create = async (req, res) => {
 };
 
 const update = async (req, res) => {
-  const id = req.params.id;
+  const {id} = req.params;
   try {
     const { slug, title, body, parent_id, status } = req.body;
     const existingData = await articleCategory.findByPk(id);

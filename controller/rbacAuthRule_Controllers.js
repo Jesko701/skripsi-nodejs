@@ -1,5 +1,9 @@
 const db = require("../model/db");
 
+const multer = require("multer");
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
+
 const authRule = db.Rbac_auth_rule;
 const authItem = db.Rbac_auth_item;
 
@@ -25,7 +29,7 @@ const show = async (req, res) => {
       include: [
         {
           model: authItem,
-          as: "auth_item",
+          as: "rbac_auth_items",
         },
       ],
     });
@@ -47,26 +51,43 @@ const show = async (req, res) => {
 };
 
 const create = async (req, res) => {
-  try {
-    const { data } = req.body;
-    const insert = await authRule.create({
-      data,
-    });
-    if (!insert) {
-      res.status(404).json({
-        message: "data gagal dibuat",
+  upload.single("data")(req, res, async function (err) {
+    if (err instanceof multer.MulterError) {
+      res.status(400).json({
+        message: "Terdapat kesalahan dalam mengunggah file",
+        error: err.message,
       });
+    } else if (err) {
+      res.status(500).json({
+        message: "Terdapat kesalahan dalam mengunggah file",
+        error: err.message,
+      });
+    } else {
+      try {
+        const { name } = req.body;
+        const { data } = req.file;
+        const insert = await authRule.create({
+          name: name,
+          data: data,
+        });
+        if (!insert) {
+          res.status(404).json({
+            message: "data gagal dibuat",
+          });
+        }
+        res.status(201).json({
+          message: "data berhasil ditambahkan",
+          data: insert,
+        });
+      } catch (error) {
+        console.log(req.body);
+        res.status(500).json({
+          message: "Terjadi kesalahan saat membuat data",
+          error: error.message,
+        });
+      }
     }
-    res.status(201).json({
-      message: "data berhasil ditambahkan",
-      data: insert,
-    });
-  } catch (error) {
-    res.status(500).json({
-      message: "Terjadi kesalahan saat membuat data",
-      error: error.message,
-    });
-  }
+  });
 };
 
 const update = async (req, res) => {
@@ -77,15 +98,33 @@ const update = async (req, res) => {
       res.status(404).json({
         message: "data tidak ditemukan",
       });
-    }
-    const { data } = req.body;
-    existingRule.data = data;
-    await existingRule.save();
+    } else {
+      upload.single('data')(req, res, async function (err) {
+        if (err instanceof multer.MulterError) {
+          res.status(400).json({
+            message: 'Terjadi kesalahan saat mengunggah file',
+            error: err.message,
+          });
+        } else if (err) {
+          res.status(500).json({
+            message: 'Terjadi kesalahan saat mengunggah file',
+            error: err.message,
+          });
+        } else {
+          if (req.file) {
+            const { data } = req.file; 
+            existingRule.data = data; 
+          }
 
-    res.status(200).json({
-      message: "data berhasil diperbarui",
-      data: existingRule,
-    });
+          await existingRule.save();
+
+          res.status(200).json({
+            message: "data berhasil diperbarui",
+            data: existingRule,
+          });
+        }
+      });
+    }
   } catch (error) {
     res.status(500).json({
       message: "Terjadi kesalahan saat mengupdate data",

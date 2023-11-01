@@ -76,14 +76,7 @@ const update = async (req, res) => {
     const { child } = req.body;
     const existingData = await authItemChild.update(child, {
       where: {
-        [Op.or]: [
-          {
-            parent: parent,
-          },
-          {
-            child: child,
-          },
-        ],
+        parent: parent
       },
       returning: true
     });
@@ -109,7 +102,7 @@ const hapus = async (req, res) => {
   try {
     const data = await authItemChild.destroy({
       where: {
-        [Op.or]: [{ parent: parent }, { child: parent }],
+        parent: parent,
       },
     });
     if (!data) {

@@ -3,9 +3,9 @@ const router = express.Router();
 const assign = require("../controller/rbacAuthItemAssignment_Controllers");
 
 router.get("/", assign.all);
-router.get("/:item_name", assign.show);
+router.get("/:user_id", assign.show);
 router.post("/", assign.create);
-router.put("/:item_name", assign.update);
-router.delete("/:item_name", assign.hapus);
+router.put("/:user_id", assign.update);
+router.delete("/:user_id", assign.hapus);
 
 module.exports = router;

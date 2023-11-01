@@ -26,14 +26,16 @@ module.exports = (sequelize, DataTypes) => {
     },
     created_at: {
       type: DataTypes.INTEGER,
-      defaultValue: Math.floor(Date.now() / 1000),
+      defaultValue: Math.floor(new Date(Date.now()).getTime() / 1000),
     },
     order: {
       type: DataTypes.INTEGER,
       allowNull: true,
     },
   }, {
-    tableName: "article_attachment"
+    tableName: "article_attachment",
+    underscored: true,
+    timestamps: false
   });
   return ArticleAttachment;
 };

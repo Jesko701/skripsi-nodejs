@@ -8,25 +8,13 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: true,
     },
-    token: {
-      type: DataTypes.STRING,
-      allowNull: true,
-    },
-    model: {
-      type: DataTypes.STRING,
-      allowNull: true,
-    },
-    data: {
-      type: DataTypes.TEXT,
-      allowNull: true,
-    },
     created_at: {
       type: DataTypes.INTEGER,
-      defaultValue: Math.floor(Date.now() / 1000),
+      defaultValue: Math.floor(new Date(Date.now()).getTime() / 1000),
     },
     updated_at: {
       type: DataTypes.INTEGER,
-      defaultValue: Math.floor(Date.now() / 1000),
+      defaultValue: Math.floor(new Date(Date.now()).getTime() / 1000),
     },
     created_by: {
       type: DataTypes.INTEGER,
@@ -41,7 +29,9 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: true,
     },
   }, {
-    tableName: 'formio_submissions'
+    tableName: 'formio_submissions',
+    underscored: true,
+    timestamps: false
   });
   return formio_submission;
 };

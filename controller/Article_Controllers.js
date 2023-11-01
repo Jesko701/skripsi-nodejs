@@ -1,6 +1,6 @@
 const db = require("../model/db");
 
-const article = db.article;
+const article = db.Article;
 const articleAttachment = db.ArticleAttachment;
 const articleCategory = db.ArticleCategory;
 
@@ -159,6 +159,9 @@ const hapus = async (req, res) => {
         message: "data tidak ditemukan",
       });
     }
+    res.status(200).json({
+      message: "data berhasil dihapus"
+    });
   } catch (error) {
     res.status(500).json({
       message: "Terjadi kesalahan saat menghapus data",

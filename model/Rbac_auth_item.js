@@ -24,15 +24,17 @@ module.exports = (sequelize, DataTypes) => {
     created_at: {
       type: DataTypes.INTEGER,
       allowNull: true,
-      defaultValue: Math.floor(Date.now() / 1000),
+      defaultValue: Math.floor(new Date(Date.now()).getTime() / 1000),
     },
     updated_at: {
       type: DataTypes.INTEGER,
       allowNull: true,
-      defaultValue: Math.floor(Date.now() / 1000),
+      defaultValue: Math.floor(new Date(Date.now()).getTime() / 1000),
     },
   }, {
-    tableName: 'rbac_auth_item'
+    tableName: 'rbac_auth_item',
+    underscored: true,
+    timestamps: false
 });
   return AuthItem;
 };

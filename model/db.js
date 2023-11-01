@@ -30,6 +30,7 @@ db.Rbac_auth_assignment = require("./Rbac_auth_assignment")(sequelize, Sequelize
 // * Article Association (One To Many)
 db.ArticleCategory.hasMany(db.Article, {
     as: "article",
+    foreignKey: "category_id",
     onDelete: "CASCADE"
 })
 db.Article.belongsTo(db.ArticleCategory, {
@@ -38,6 +39,7 @@ db.Article.belongsTo(db.ArticleCategory, {
 })
 db.Article.hasMany(db.ArticleAttachment, {
     as: "article_attachment",
+    foreignKey: "article_id",
     onDelete: "CASCADE"
 })
 db.ArticleAttachment.belongsTo(db.Article, {
@@ -48,6 +50,7 @@ db.ArticleAttachment.belongsTo(db.Article, {
 // * form Association (One To Many)
 db.Formio_forms.hasMany(db.Formio_submission, {
     as: "formio_submission",
+    foreignKey: "form_id",
     onDelete: "CASCADE"
 })
 db.Formio_submission.belongsTo(db.Formio_forms,{
@@ -57,7 +60,7 @@ db.Formio_submission.belongsTo(db.Formio_forms,{
 
 //  * RBAC (One To Many)
 db.Rbac_auth_rule.hasMany(db.Rbac_auth_item, {
-    as: "rbac_auth_item",
+    foreignKey:"rule_name",
     onDelete: "CASCADE"
 })
 db.Rbac_auth_item.belongsTo(db.Rbac_auth_rule, {
@@ -65,20 +68,19 @@ db.Rbac_auth_item.belongsTo(db.Rbac_auth_rule, {
     foreignKey: "rule_name"
 })
 db.Rbac_auth_item.hasMany(db.Rbac_auth_item_child, {
-    as: "rbac_auth_item_child_parent", 
     foreignKey: "parent",
     onDelete: "CASCADE"
 })
 db.Rbac_auth_item.hasMany(db.Rbac_auth_item_child, {
-    as: "rbac_auth_item_child_child", 
     foreignKey: "child",
     onDelete: "CASCADE"
 })
 db.Rbac_auth_item_child.belongsTo(db.Rbac_auth_item, {
-    as: "to_rbac_auth_item"
+    as: "to_rbac_auth_item",
+    targetKey: "name"
 })
 db.Rbac_auth_item.hasMany(db.Rbac_auth_assignment, {
-    as: "rbac_auth_assignment",
+    foreignKey: "item_name",
     onDelete: "CASCADE"
 })
 db.Rbac_auth_assignment.belongsTo(db.Rbac_auth_item, {

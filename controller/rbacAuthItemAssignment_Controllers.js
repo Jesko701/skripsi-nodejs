@@ -17,13 +17,13 @@ const all = async (req, res) => {
   }
 };
 const show = async (req, res) => {
-  const { item_name } = req.params;
+  const { user_id } = req.params;
   try {
-    const data = await authItemAssignment.findByPk(item_name, {
+    const data = await authItemAssignment.findByPk(user_id, {
       include: [
         {
           model: authItem,
-          as: "auth_item",
+          as: "to_rbac_auth_item",
         },
       ],
     });
@@ -66,17 +66,17 @@ const create = async (req, res) => {
 };
 
 const update = async (req, res) => {
-    const item_name = req.params.item_name
+    const user_id = req.params.user_id
     try {
-        const {user_id} = req.body
-        const existingAuthAssignment = await authItemAssignment.findByPk(item_name);
+        const {item_name} = req.body
+        const existingAuthAssignment = await authItemAssignment.findByPk(user_id);
         if(!existingAuthAssignment){
             res.status(404).json({
                 message: "data tidak ditemukan"
             })
         }
-        existingAuthAssignment.user_id = user_id
-        existingAuthAssignment.save();
+        existingAuthAssignment.item_name = item_name
+        await existingAuthAssignment.save();
         res.status(200).json({
             message: "data berhasil diperbarui",
             data: existingAuthAssignment
@@ -90,11 +90,11 @@ const update = async (req, res) => {
 };
 
 const hapus = async (req, res) => {
-  const { item_name } = req.params;
+  const { user_id } = req.params;
   try {
     const data = await authItemAssignment.destroy({
       where: {
-        item_name: item_name,
+        user_id: user_id,
       },
     });
     if (data > 0) {

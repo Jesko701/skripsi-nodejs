@@ -3,7 +3,6 @@ module.exports = (sequelize, DataTypes) => {
     name: {
       type: DataTypes.STRING,
       primaryKey: true,
-      allowNull: false,
     },
     data: {
       type: DataTypes.BLOB,
@@ -12,15 +11,17 @@ module.exports = (sequelize, DataTypes) => {
     created_at: {
       type: DataTypes.INTEGER,
       allowNull: true,
-      defaultValue: Math.floor(Date.now() / 1000),
+      defaultValue: Math.floor(new Date(Date.now()).getTime() / 1000),
     },
     updated_at: {
       type: DataTypes.INTEGER,
       allowNull: true,
-      defaultValue: Math.floor(Date.now() / 1000),
+      defaultValue: Math.floor(new Date(Date.now()).getTime() / 1000),
     },
   }, {
-    tableName: 'rbac_auth_rule'
+    tableName: 'rbac_auth_rule',
+    underscored: true,
+    timestamps: false
 });
   return AuthRule;
 };

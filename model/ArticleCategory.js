@@ -22,14 +22,17 @@ module.exports = (sequelize, DataTypes) => {
         },
         created_at: {
             type: DataTypes.INTEGER,
-            defaultValue: Math.floor(Date.now() / 1000)
+            defaultValue: Math.floor(new Date(Date.now()).getTime() / 1000)
         },
         updated_at: {
             type: DataTypes.INTEGER,
-            defaultValue: Math.floor(Date.now() / 1000)
+            defaultValue: Math.floor(new Date(Date.now()).getTime() / 1000)
         }
       }, {
-        tableName: 'article_category'
-      });
+        tableName: 'article_category',
+        underscored: true,
+        timestamps: false
+      },
+      );
       return ArticleCategory
 }

@@ -1,8 +1,9 @@
 const db = require("./model/db");
 const express = require("express");
 const app = express();
+const body = require('body-parser');
 
-app.use(express.json());
+app.use(body.json());
 
 db.sequelize
   .query("SET FOREIGN_KEY_CHECKS = 0")
