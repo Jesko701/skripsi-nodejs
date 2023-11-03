@@ -2,12 +2,11 @@ module.exports=(sequelize, DataTypes) => {
     const AuthItemChild = sequelize.define("rbac_auth_item_child", {
         parent: {
             type: DataTypes.STRING,
-            primaryKey: false,
+            primaryKey: true,
             allowNull: true,
         },
         child: {
             type: DataTypes.STRING,
-            primaryKey: false,
             allowNull: true,
         }
     }, {

@@ -42,7 +42,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     published_at: {
       type: DataTypes.DATE,
-      allowNull: true,
+      allowNull: Math.floor(new Date(Date.now()).getTime() / 1000),
     },
     created_at: {
       type: DataTypes.INTEGER,

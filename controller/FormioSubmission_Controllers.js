@@ -4,11 +4,22 @@ const formsSubmission = db.Formio_submission;
 const formsFormio = db.Formio_forms;
 
 const all = async (req, res) => {
+  const page = req.query.page || 1; 
+  const itemsPerPage = 75; 
+
   try {
-    const data = await formsSubmission.findAll();
+    const data = await formsSubmission.findAndCountAll({
+      limit: itemsPerPage, 
+      offset: (page - 1) * itemsPerPage, 
+    });
+
+    const totalHalaman = Math.ceil(data.count / itemsPerPage);
+
     res.status(200).json({
-      message: "berhasil mengambil seluruh data",
-      data: data,
+      message: "berhasil mengambil data",
+      data: data.rows,
+      totalItems: data.count, 
+      totalPages: totalHalaman, 
     });
   } catch (error) {
     res.status(500).json({
