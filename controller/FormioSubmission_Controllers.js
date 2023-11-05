@@ -4,13 +4,13 @@ const formsSubmission = db.Formio_submission;
 const formsFormio = db.Formio_forms;
 
 const all = async (req, res) => {
-  const page = req.query.page || 1; 
-  const itemsPerPage = 75; 
+  const page = req.query.page || 1;
+  const itemsPerPage = 75;
 
   try {
     const data = await formsSubmission.findAndCountAll({
-      limit: itemsPerPage, 
-      offset: (page - 1) * itemsPerPage, 
+      limit: itemsPerPage,
+      offset: (page - 1) * itemsPerPage,
     });
 
     const totalHalaman = Math.ceil(data.count / itemsPerPage);
@@ -18,9 +18,38 @@ const all = async (req, res) => {
     res.status(200).json({
       message: "berhasil mengambil data",
       data: data.rows,
-      totalItems: data.count, 
-      totalPages: totalHalaman, 
+      totalItems: data.count,
+      totalPages: totalHalaman,
     });
+  } catch (error) {
+    res.status(500).json({
+      message: "Terjadi kesalahan saat mengambil data",
+      error: error.message,
+    });
+  }
+};
+
+const dataPagination = async (req, res) => {
+  try {
+    const page = req.query.page || 1;
+    const jumlah = req.query.jumlah || 50;
+    const offset = (page - 1) * jumlah;
+    const data = await formsSubmission.findAndCountAll({
+      offset: offset,
+      limit: jumlah,
+      include: [{ model: formsFormio, as: "formio_forms"}],
+    });
+
+    if (!data.rows.length) {
+      res.status(404).json({
+        message: "Data tidak ditemukan",
+      });
+    } else {
+      res.status(200).json({
+        message: "Data berhasil ditemukan",
+        data: data,
+      });
+    }
   } catch (error) {
     res.status(500).json({
       message: "Terjadi kesalahan saat mengambil data",
@@ -143,4 +172,5 @@ module.exports = {
   create,
   update,
   hapus,
+  dataPagination,
 };

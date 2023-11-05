@@ -17,6 +17,34 @@ const all = async (req, res) => {
   }
 };
 
+const dataPagination = async (req, res) => {
+  try {
+    const page = req.query.page || 1;
+    const jumlah = parseInt(req.query.jumlah) || 50;
+    const offset = (page - 1) * jumlah;
+
+    const data = await articleCategory.findAndCountAll({
+      limit: jumlah,
+      offset: offset,
+      include: [{
+        model: article,
+        as: "article",
+        limit: jumlah
+      }]
+    })
+    res.status(200).json({
+      message: "data berhasil ditemukan",
+      data: data
+    })
+    
+  } catch (error) {
+    res.status(500).json({
+      message: "Terjadi kesalahan saat mengambil data",
+      error: error.message,
+    });
+  }
+};
+
 const show = async (req, res) => {
   const { id } = req.params;
   try {
@@ -62,7 +90,7 @@ const create = async (req, res) => {
     }
     res.status(200).json({
       message: "data berhasil dibuat",
-      data: data
+      data: data,
     });
   } catch (error) {
     res.status(500).json({
@@ -73,7 +101,7 @@ const create = async (req, res) => {
 };
 
 const update = async (req, res) => {
-  const {id} = req.params;
+  const { id } = req.params;
   try {
     const { slug, title, body, parent_id, status } = req.body;
     const existingData = await articleCategory.findByPk(id);
@@ -134,4 +162,5 @@ module.exports = {
   create,
   update,
   hapus,
+  dataPagination
 };

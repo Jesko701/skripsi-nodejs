@@ -19,6 +19,39 @@ const all = async (req, res) => {
   }
 };
 
+const dataPagination = async(req,res) => {
+  try {
+    const page = req.query.page || 1;
+    const jumlah = parseInt(req.query.jumlah) || 50;
+    const offset = (page-1)*jumlah;
+
+    const data = await authItem.findAndCountAll({
+      limit: jumlah,
+      offset: offset,
+      include: [
+        {
+          model: authItemChild,
+          as: "rbac_auth_item_children",
+        },
+        {
+          model: authAssignment,
+          as: "rbac_auth_assignments",
+          limit: jumlah
+        },
+      ]
+    })
+    res.status(200).json({
+      message: "data berhasil ditemukan",
+      data: data,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Terjadi kesalahan saat mengambil data",
+      error: error.message,
+    });
+  }
+}
+
 const show = async (req, res) => {
   const { name } = req.params;
   try {
@@ -135,4 +168,5 @@ module.exports = {
   create,
   update,
   hapus,
+  dataPagination
 };

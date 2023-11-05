@@ -3,6 +3,7 @@ const router = express.Router();
 const assign = require("../controller/rbacAuthItemAssignment_Controllers");
 
 router.get("/", assign.all);
+router.get("/pagination", assign.dataPagination);
 router.get("/:user_id", assign.show);
 router.post("/", assign.create);
 router.put("/:user_id", assign.update);

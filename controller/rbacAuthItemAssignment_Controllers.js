@@ -16,6 +16,29 @@ const all = async (req, res) => {
     });
   }
 };
+
+const dataPagination = async (req, res) => {
+  try {
+    const page = req.query.page || 1;
+    const jumlah = parseInt(req.query.jumlah) || 50;
+    const offset = (page - 1) * jumlah;
+    const data = await authItemAssignment.findAndCountAll({
+      offset: offset,
+      limit: jumlah,
+      include: [{ model: authItem, as: "to_rbac_auth_item" }],
+    });
+    res.status(200).json({
+      message: "data berhasil ditemukan",
+      data: data,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Terjadi kesalahan saat mengambil data",
+      error: error.message,
+    });
+  }
+};
+
 const show = async (req, res) => {
   const { user_id } = req.params;
   try {
@@ -66,27 +89,27 @@ const create = async (req, res) => {
 };
 
 const update = async (req, res) => {
-    const user_id = req.params.user_id
-    try {
-        const {item_name} = req.body
-        const existingAuthAssignment = await authItemAssignment.findByPk(user_id);
-        if(!existingAuthAssignment){
-            res.status(404).json({
-                message: "data tidak ditemukan"
-            })
-        }
-        existingAuthAssignment.item_name = item_name
-        await existingAuthAssignment.save();
-        res.status(200).json({
-            message: "data berhasil diperbarui",
-            data: existingAuthAssignment
-        })
-    } catch (error) {
-        res.status(500).json({
-          message: "Terjadi kesalahan saat mengupdate data",
-          error: error.message,
-        });
+  const user_id = req.params.user_id;
+  try {
+    const { item_name } = req.body;
+    const existingAuthAssignment = await authItemAssignment.findByPk(user_id);
+    if (!existingAuthAssignment) {
+      res.status(404).json({
+        message: "data tidak ditemukan",
+      });
     }
+    existingAuthAssignment.item_name = item_name;
+    await existingAuthAssignment.save();
+    res.status(200).json({
+      message: "data berhasil diperbarui",
+      data: existingAuthAssignment,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Terjadi kesalahan saat mengupdate data",
+      error: error.message,
+    });
+  }
 };
 
 const hapus = async (req, res) => {
@@ -119,4 +142,5 @@ module.exports = {
   create,
   update,
   hapus,
+  dataPagination
 };

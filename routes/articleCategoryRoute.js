@@ -3,6 +3,7 @@ const router = express.Router();
 const articleCategory = require("../controller/ArticleCategory_Controllers");
 
 router.get("/", articleCategory.all);
+router.get("/pagination", articleCategory.dataPagination);
 router.get("/:id", articleCategory.show);
 router.post("/", articleCategory.create);
 router.put("/:id", articleCategory.update);

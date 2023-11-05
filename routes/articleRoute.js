@@ -3,6 +3,7 @@ const router = express.Router();
 const articleController = require("../controller/Article_Controllers");
 
 router.get("/", articleController.all);
+router.get("/pagination", articleController.dataPagination);
 router.get("/:id", articleController.show);
 router.post("/", articleController.create);
 router.put("/:id", articleController.update);

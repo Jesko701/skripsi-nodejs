@@ -49,6 +49,9 @@ app.use("/rbacItem", rbacItem)
 const rbacChild = require("./routes/authChildRoute")
 app.use("/rbacChild", rbacChild)
 
+const fileSystem = require("./routes/fileSystemRoute")
+app.use("/fileSystem",fileSystem)
+
 app.get('/', (req, res) => {
   res.status(200).json({
     message: "Berhasil mengambil API"

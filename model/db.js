@@ -27,6 +27,9 @@ db.Rbac_auth_item = require("./Rbac_auth_item")(sequelize, Sequelize)
 db.Rbac_auth_item_child = require("./Rbac_auth_item_child")(sequelize, Sequelize)
 db.Rbac_auth_assignment = require("./Rbac_auth_assignment")(sequelize, Sequelize)
 
+// * fileSystem
+db.File_system = require('./fileStorageSystem')(sequelize,Sequelize);
+
 // * Article Association (One To Many)
 db.ArticleCategory.hasMany(db.Article, {
     as: "article",

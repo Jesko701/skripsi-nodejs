@@ -17,6 +17,38 @@ const all = async (req, res) => {
     });
   }
 };
+
+const dataPagination = async (req, res) => {
+  try {
+    const page = req.query.page || 1;
+    const jumlah = parseInt(req.query.jumlah, 10) || 50;
+    const offset = (page - 1) * jumlah;
+    
+    const data = await formioForms.findAndCountAll({
+      offset: offset,
+      limit: jumlah,
+      include: [{ model: formioSubmission, as: "formio_submission", limit: jumlah }],
+    });
+
+    if (!data.rows.length) {
+      res.status(404).json({
+        message: "Data tidak ditemukan",
+      });
+    } else {
+      res.status(200).json({
+        message: "Data berhasil ditemukan",
+        data: data,
+      });
+    }
+  } catch (error) {
+    res.status(500).json({
+      message: "Terjadi kesalahan saat mengambil data",
+      error: error.message,
+    });
+  }
+};
+
+
 const show = async (req, res) => {
   const { id } = req.params;
   try {
@@ -168,4 +200,5 @@ module.exports = {
   create,
   update,
   hapus,
+  dataPagination,
 };

@@ -3,6 +3,7 @@ const router = express.Router();
 const forms = require("../controller/FormioForms_Controllers");
 
 router.get("/", forms.all);
+router.get("/pagination", forms.dataPagination);
 router.get("/:id", forms.show);
 router.post("/", forms.create);
 router.put("/:id", forms.update);

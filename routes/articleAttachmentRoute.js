@@ -3,6 +3,7 @@ const router = express.Router();
 const articleAttachment = require("../controller/ArticleAttachments_Controllers");
 
 router.get("/", articleAttachment.all);
+router.get("/pagination", articleAttachment.dataPagination);
 router.get("/:id", articleAttachment.show);
 router.post("/", articleAttachment.create);
 router.put("/:id", articleAttachment.update);
