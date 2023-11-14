@@ -4,9 +4,9 @@ const article = db.Article;
 const articleAttachment = db.ArticleAttachment;
 const articleCategory = db.ArticleCategory;
 
-const all = async (req, res) => {
+const all = (req, res) => {
   try {
-    const data = await article.findAll();
+    const data = article.findAll();
     res.status(200).json({
       message: "berhasil mengambil seluruh data",
       data: data,
@@ -19,43 +19,43 @@ const all = async (req, res) => {
   }
 };
 
-const dataPagination = async(req,res)=>{
+const dataPagination = (req, res) => {
   try {
     const page = req.query.page || 1;
     const jumlah = parseInt(req.query.jumlah) || 50;
     const offset = (page - 1) * jumlah;
 
-    const data = await article.findAndCountAll({
+    const data = article.findAndCountAll({
       limit: jumlah,
       offset: offset,
       include: [
         {
           model: articleAttachment,
           as: "article_attachment",
-          limit: jumlah
+          limit: jumlah,
         },
         {
           model: articleCategory,
           as: "article_category",
         },
-      ]
-    })
+      ],
+    });
     res.status(200).json({
       message: "data berhasil ditemukan",
-      data: data
-    })
+      data: data,
+    });
   } catch (error) {
     res.status(500).json({
       message: "Terjadi kesalahan saat mengambil data",
       error: error.message,
     });
   }
-}
+};
 
-const show = async (req, res) => {
+const show = (req, res) => {
   const { id } = req.params;
   try {
-    const data = await article.findByPk(id, {
+    const data = article.findByPk(id, {
       include: [
         {
           model: articleAttachment,
@@ -84,7 +84,7 @@ const show = async (req, res) => {
   }
 };
 
-const create = async (req, res) => {
+const create = (req, res) => {
   const {
     slug,
     title,
@@ -99,7 +99,7 @@ const create = async (req, res) => {
     published_at,
   } = req.body;
   try {
-    const newArticle = await article.create({
+    const newArticle = article.create({
       slug,
       title,
       body,
@@ -129,7 +129,7 @@ const create = async (req, res) => {
   }
 };
 
-const update = async (req, res) => {
+const update = (req, res) => {
   const id = req.params.id;
   try {
     const {
@@ -146,7 +146,7 @@ const update = async (req, res) => {
       published_at,
     } = req.body;
 
-    const existingData = await article.findByPk(id);
+    const existingData = article.findByPk(id);
     if (!existingData) {
       return res.status(404).json({
         message: "data tidak ditemukan",
@@ -165,7 +165,7 @@ const update = async (req, res) => {
     existingData.updated_by = updated_by;
     existingData.published_at = published_at;
 
-    await existingData.save();
+    existingData.save();
 
     res.status(200).json({
       message: "data berhasil diperbarui",
@@ -179,10 +179,10 @@ const update = async (req, res) => {
   }
 };
 
-const hapus = async (req, res) => {
+const hapus = (req, res) => {
   const { id } = req.params;
   try {
-    const hapus = await article.destroy({
+    const hapus = article.destroy({
       where: {
         id: id,
       },
@@ -193,7 +193,7 @@ const hapus = async (req, res) => {
       });
     }
     res.status(200).json({
-      message: "data berhasil dihapus"
+      message: "data berhasil dihapus",
     });
   } catch (error) {
     res.status(500).json({
@@ -209,5 +209,5 @@ module.exports = {
   create,
   update,
   hapus,
-  dataPagination
+  dataPagination,
 };
