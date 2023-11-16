@@ -32,7 +32,7 @@ const all = async (req, res) => {
 const dataPagination = async (req, res) => {
   try {
     const page = req.query.page || 1;
-    const jumlah = req.query.jumlah || 50;
+    const jumlah = parseInt(req.query.jumlah) || 50;
     const offset = (page - 1) * jumlah;
     const data = await formsSubmission.findAndCountAll({
       offset: offset,
