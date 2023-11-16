@@ -1,15 +1,30 @@
 const db = require("../model/db");
 
 const article = db.Article;
-const articleAttachment = db.ArticleAttachment;
-const articleCategory = db.ArticleCategory;
+const connection = require("../db.config");
 
+const syncQuery = (sqlQuery, callback) => {
+  db.sequelize
+    .query(sqlQuery, { type: db.Sequelize.QueryTypes.SELECT })
+    .then((data) => callback(null, data))
+    .catch((error) => callback(error, null));
+};
+connection.connect();
 const all = (req, res) => {
   try {
-    const data = article.findAll();
-    res.status(200).json({
-      message: "berhasil mengambil seluruh data",
-      data: data,
+    const sqlQuery = "SELECT * FROM article";
+    syncQuery(sqlQuery, (error, data) => {
+      if (error) {
+        res.status(500).json({
+          message: "Terjadi kesalahan saat mengambil data",
+          error: error.message,
+        });
+      } else {
+        res.status(200).json({
+          message: "Berhasil mengambil seluruh data",
+          data: data,
+        });
+      }
     });
   } catch (error) {
     res.status(500).json({
@@ -25,24 +40,42 @@ const dataPagination = (req, res) => {
     const jumlah = parseInt(req.query.jumlah) || 50;
     const offset = (page - 1) * jumlah;
 
-    const data = article.findAndCountAll({
-      limit: jumlah,
-      offset: offset,
-      include: [
-        {
-          model: articleAttachment,
-          as: "article_attachment",
-          limit: jumlah,
-        },
-        {
-          model: articleCategory,
-          as: "article_category",
-        },
-      ],
-    });
-    res.status(200).json({
-      message: "data berhasil ditemukan",
-      data: data,
+    const sqlQuery = `
+    SELECT a.id AS article_id, 
+    a.title AS article_title,
+    a.body as article_body,
+    a.view as  article_view,
+    a.thumbnail_base_url as article_baseUrl,
+    a.thumbnail_path as article_path,
+    a.status as article_status,
+    at.id AS attachment_id,
+    at.article_id AS attachment_id,
+    ac.id AS category_id,
+    ac.title AS category_name
+    FROM article a
+      LEFT JOIN
+        article_attachment at
+      ON
+        a.id = at.article_id
+      LEFT JOIN
+        article_category ac
+      ON
+        a.category_id = ac.id
+      LIMIT ${jumlah} OFFSET ${offset};
+    `;
+
+    syncQuery(sqlQuery, (error, data) => {
+      if (error) {
+        res.status(500).json({
+          message: "Terjadi kesalahan saat mengambil data",
+          error: error.message,
+        });
+      } else {
+        res.status(200).json({
+          message: "Data berhasil ditemukan",
+          data: data,
+        });
+      }
     });
   } catch (error) {
     res.status(500).json({
@@ -55,27 +88,53 @@ const dataPagination = (req, res) => {
 const show = (req, res) => {
   const { id } = req.params;
   try {
-    const data = article.findByPk(id, {
-      include: [
-        {
-          model: articleAttachment,
-          as: "article_attachment",
-        },
-        {
-          model: articleCategory,
-          as: "article_category",
-        },
-      ],
-    });
-    if (!data) {
-      return res.status(404).json({
-        message: "data tidak ditemukan",
-      });
-    }
-    res.status(201).json({
-      message: "data berhasil ditemukan",
-      data: data,
-    });
+    // Tidak perlu melakukan connection.connect() dua kali
+    const sqlQuery = `
+    SELECT article.id AS article_id, 
+    article.title AS article_title,
+    article.body as article_body,
+    article.view as  article_view,
+    article.thumbnail_base_url as article_baseUrl,
+    article.thumbnail_path as article_path,
+    article.status as article_status,
+    article_attachment.id AS attachment_id,
+    article_attachment.article_id AS attachment_id,
+    article_category.id AS category_id,
+    article_category.title AS category_name
+    FROM article 
+    LEFT JOIN article_attachment ON article.id = article_attachment.article_id
+    LEFT JOIN article_category ON article.category_id = article_category.id
+    WHERE article.id = ${id};
+    `;
+    syncQuery(sqlQuery, (error,result) => {
+      if (error) {
+        res.status(404).json({
+          message: "data tidak ditemukan",
+          error: error.message
+        })
+      }
+      res.status(200).json({
+        message: "data ditemukan",
+        data: result
+      })
+    })
+    // connection.query(sqlQuery, [id], (error, result) => {
+    //   if (error) {
+    //     res.status(500).json({
+    //       message: "Terjadi kesalahan saat mengambil data",
+    //       error: error.message,
+    //     });
+    //   } else if (result.length === 0) {
+    //     res.status(404).json({
+    //       message: "Data tidak ditemukan",
+    //     });
+    //   } else {
+    //     res.status(200).json({
+    //       message: "Data berhasil ditemukan",
+    //       data: result,
+    //     });
+    //   }
+    // });
   } catch (error) {
     res.status(500).json({
       message: "Terjadi kesalahan saat mengambil data",

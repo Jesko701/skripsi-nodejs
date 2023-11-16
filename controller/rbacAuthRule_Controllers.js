@@ -7,6 +7,13 @@ const upload = multer({ storage: storage });
 const authRule = db.Rbac_auth_rule;
 const authItem = db.Rbac_auth_item;
 
+const syncQuery = (sqlQuery, callback) => {
+  db.sequelize
+    .query(sqlQuery, { type: db.Sequelize.QueryTypes.SELECT })
+    .then((data) => callback(null, data))
+    .catch((error) => callback(error, null));
+};
+
 const all = async (req, res) => {
   try {
     const data = await authRule.findAll();

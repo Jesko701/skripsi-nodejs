@@ -1,15 +1,35 @@
+const connection = require("../db.config");
 const db = require("../model/db");
 
 const authItem = db.Rbac_auth_item;
 const authItemChild = db.Rbac_auth_item_child;
 const authAssignment = db.Rbac_auth_assignment;
 
+connection.connect();
+
 const all = async (req, res) => {
   try {
-    const data = await authItem.findAll();
-    res.status(200).json({
-      message: "berhasil mengambil seluruh data",
-      data: data,
+    const sqlQuery = `SELECT
+    name,
+    data,
+    created_at,
+    updated_at
+    FROM
+    rbac_auth_rule;`;
+    connection.query(sqlQuery, (error, result) => {
+      if (error) {
+        res.status(500).json({
+          message: "Terjadi kesalahan dalam mengambil data",
+        });
+      } else if (!result || result.length === 0) {
+        res.status(404).json({
+          message: "data tidak ditemukan atau data kosong",
+        });
+        res.status(200).json({
+          message: "data telah ditemukan",
+          data: result,
+        });
+      }
     });
   } catch (error) {
     res.status(500).json({
@@ -19,11 +39,11 @@ const all = async (req, res) => {
   }
 };
 
-const dataPagination = async(req,res) => {
+const dataPagination = async (req, res) => {
   try {
     const page = req.query.page || 1;
     const jumlah = parseInt(req.query.jumlah) || 50;
-    const offset = (page-1)*jumlah;
+    const offset = (page - 1) * jumlah;
 
     const data = await authItem.findAndCountAll({
       limit: jumlah,
@@ -36,10 +56,10 @@ const dataPagination = async(req,res) => {
         {
           model: authAssignment,
           as: "rbac_auth_assignments",
-          limit: jumlah
+          limit: jumlah,
         },
-      ]
-    })
+      ],
+    });
     res.status(200).json({
       message: "data berhasil ditemukan",
       data: data,
@@ -50,7 +70,7 @@ const dataPagination = async(req,res) => {
       error: error.message,
     });
   }
-}
+};
 
 const show = async (req, res) => {
   const { name } = req.params;
@@ -168,5 +188,5 @@ module.exports = {
   create,
   update,
   hapus,
-  dataPagination
+  dataPagination,
 };

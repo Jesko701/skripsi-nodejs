@@ -2,6 +2,13 @@ const db = require("../model/db");
 const authItemAssignment = db.Rbac_auth_assignment;
 const authItem = db.Rbac_auth_item;
 
+const syncQuery = (sqlQuery, callback) => {
+  db.sequelize
+    .query(sqlQuery, { type: db.Sequelize.QueryTypes.SELECT })
+    .then((data) => callback(null, data))
+    .catch((error) => callback(error, null));
+};
+
 const all = async (req, res) => {
   try {
     const data = await authItemAssignment.findAll();

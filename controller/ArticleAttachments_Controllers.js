@@ -1,14 +1,28 @@
+const connection = require("../db.config");
 const db = require("../model/db");
 const articleAttachment = db.ArticleAttachment;
-const article = db.Article;
+
+connection.connect();
 
 const all = (req, res) => {
   try {
-    const data = articleAttachment.findAll();
-    res.status(200).json({
-      message: "berhasil mengambil seluruh data",
-      data: data,
-    });
+    const sqlQuery = "SELECT * FROM article_attachment";
+    connection.query(sqlQuery, (error, result) => {
+      if (error) {
+        res.status(500).json({
+          message: "Terdapat kesalahan dalam mengambil data",
+          error: error.message
+        })
+      } else if (!result){
+        res.status(404).json({
+          message: "data tidak ditemukan",
+        })
+      }
+      res.status(200).json({
+        message: "data telah ditemukan",
+        data: result
+      });
+    })
   } catch (error) {
     res.status(500).json({
       message: "Terjadi kesalahan saat mengambil data",
@@ -23,20 +37,34 @@ const dataPagination = (req, res) => {
     const jumlah = parseInt(req.query.jumlah) || 50;
     const offset = (page - 1) * jumlah;
 
-    const data = articleAttachment.findAndCountAll({
-      limit: jumlah,
-      offset: offset,
-      include: [
-        {
-          model: article,
-          as: "article",
-        },
-      ],
-    });
-    res.status(200).json({
-      message: "data berhasil ditemukan",
-      data: data,
-    });
+    const sqlQuery = `
+      SELECT
+        at.*,
+        a.title as article_title
+      FROM
+        article_attachment at
+      LEFT JOIN
+        article a
+      ON
+        at.article_id = a.id
+      LIMIT ${jumlah} OFFSET ${offset};
+    `;
+    connection.query(sqlQuery, (error, result) => {
+      if (error) {
+        res.status(500).json({
+          message: "Terdapat kesalahan dalam mengambil data",
+          error: error.message
+        })
+      } else if (!result){
+        res.status(404).json({
+          message: "data tidak ditemukan",
+        })
+      }
+      res.status(200).json({
+        message: "data telah ditemukan",
+        data: result
+      });
+    })
   } catch (error) {
     res.status(500).json({
       message: "Terjadi kesalahan saat mengambil data",
@@ -48,23 +76,42 @@ const dataPagination = (req, res) => {
 const show = (req, res) => {
   const { id } = req.params;
   try {
-    const data = articleAttachment.findByPk(id, {
-      include: [
-        {
-          model: article,
-          as: "article",
-        },
-      ],
-    });
-    if (!data) {
-      return res.status(404).json({
-        message: "data tidak ditemukan",
+    const sqlQuery = `
+      SELECT
+        at.id as attachment_id,
+        at.article_id as attachment_articleId,
+        at.path as attachment_path,
+        at.base_url as attachment_baseUrl,
+        at.type as attachment_type,
+        at.size as attachment_size,
+        at.name as attachment_name,
+        at.order as attachment_order,
+        a.*
+      FROM
+        article_attachment at
+      LEFT JOIN
+        article a
+      ON
+        at.article_id = a.id
+      WHERE
+      at.id = ${id};
+    `;
+    connection.query(sqlQuery, (error, result) => {
+      if (error) {
+        res.status(500).json({
+          message: "Terdapat kesalahan dalam mengambil data",
+          error: error.message
+        })
+      } else if (!result){
+        res.status(404).json({
+          message: "data tidak ditemukan",
+        })
+      }
+      res.status(200).json({
+        message: "data telah ditemukan",
+        data: result
       });
-    }
-    res.status(201).json({
-      message: "data berhasil ditemukan",
-      data: data,
-    });
+    })
   } catch (error) {
     res.status(500).json({
       message: "Terjadi kesalahan saat mengambil data",

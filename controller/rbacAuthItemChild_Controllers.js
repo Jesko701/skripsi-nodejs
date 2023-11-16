@@ -3,6 +3,13 @@ const { Op } = require("sequelize");
 const authItemChild = db.Rbac_auth_item_child;
 const authItem = db.Rbac_auth_item;
 
+const syncQuery = (sqlQuery, callback) => {
+  db.sequelize
+    .query(sqlQuery, { type: db.Sequelize.QueryTypes.SELECT })
+    .then((data) => callback(null, data))
+    .catch((error) => callback(error, null));
+};
+
 const all = async (req, res) => {
   try {
     const data = await authItemChild.findAll();
