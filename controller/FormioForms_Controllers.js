@@ -65,7 +65,7 @@ const show = async (req, res) => {
         message: "data tidak ditemukan",
       });
     }
-    res.status(201).json({
+    res.status(200).json({
       message: "data berhasil ditemukan",
       data: data,
     });
