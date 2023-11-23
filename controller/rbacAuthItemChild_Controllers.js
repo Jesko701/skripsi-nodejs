@@ -21,13 +21,16 @@ const all = async (req, res) => {
 const show = async (req, res) => {
   const { parent } = req.params;
   try {
-    const data = await authItemChild.findByPk(parent, {
+    const data = await authItemChild.findAll({
       include: [
         {
           model: authItem,
           as: "auth_item",
         },
       ],
+      where: {
+        parent: parent,
+      },
     });
     if (!data) {
       return res.status(404).json({
@@ -76,9 +79,9 @@ const update = async (req, res) => {
     const { child } = req.body;
     const existingData = await authItemChild.update(child, {
       where: {
-        parent: parent
+        parent: parent,
       },
-      returning: true
+      returning: true,
     });
     if (existingData[0] === 0) {
       res.status(404).json({
@@ -87,8 +90,8 @@ const update = async (req, res) => {
     }
     res.status(200).json({
       message: "data berhasil diperbarui",
-      data: existingData[1][0]
-    })
+      data: existingData[1][0],
+    });
   } catch (error) {
     res.status(500).json({
       message: "Terjadi kesalahan saat memperbarui data",

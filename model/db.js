@@ -70,13 +70,13 @@ db.Rbac_auth_item.belongsTo(db.Rbac_auth_rule, {
     as: "rbac_auth_rule",
     foreignKey: "rule_name"
 })
+
 db.Rbac_auth_item.hasMany(db.Rbac_auth_item_child, {
     foreignKey: 'parent',
     onDelete: "CASCADE"
 })
-
 db.Rbac_auth_item_child.belongsTo(db.Rbac_auth_item, {
-    as: "to_rbac_auth_item",
+    as: "auth_item",
     foreignKey: "parent",
     targetKey: "name"
 })
